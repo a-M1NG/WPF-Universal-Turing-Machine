@@ -1,0 +1,913 @@
+﻿<Window
+    x:Class="WpfTuringMachine.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:WpfTuringMachine"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="MainWindow"
+    Width="1000"
+    Height="680"
+    MinWidth="1000"
+    MinHeight="680"
+    MaxWidth="1600"
+    MaxHeight="1000"
+    AllowsTransparency="True"
+    Background="Transparent"
+    ResizeMode="CanResizeWithGrip"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="None"
+    mc:Ignorable="d">
+
+    <Window.Resources>
+        <local:TextBoxWidthConverter x:Key="TextBoxWidthConverter" />
+
+        <Style x:Key="CloseAndMinimizeStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{Binding Path=Background, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="Foreground" Value="{Binding Path=Foreground, RelativeSource={RelativeSource Self}}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TextBlockHoverStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="Black" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation
+                                    Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
+                                    To="WhiteSmoke"
+                                    Duration="0:0:0.2" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation
+                                    Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
+                                    To="Black"
+                                    Duration="0:0:0.2" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+
+    <Border
+        x:Name="MainBorder"
+        Background="#dfef88be"
+        CornerRadius="30"
+        MouseDown="Border_MouseDown">
+        <Grid Background="Transparent">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="32" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="25" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Line
+                Grid.ColumnSpan="3"
+                Stroke="Transparent"
+                StrokeThickness="3"
+                X1="0"
+                X2="900"
+                Y1="32"
+                Y2="32" />
+            <StackPanel
+                Grid.Column="2"
+                HorizontalAlignment="Right"
+                Orientation="Horizontal">
+                <Button
+                    Width="32"
+                    Height="32"
+                    Background="Transparent"
+                    BorderBrush="Transparent"
+                    Click="Button_Click"
+                    Style="{StaticResource CloseAndMinimizeStyle}"
+                    ToolTip="最小化">
+                    <Grid>
+                        <Ellipse
+                            x:Name="MiniElli"
+                            Width="25"
+                            Height="25"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Fill="#2FFF9E">
+                            <Ellipse.Triggers>
+                                <EventTrigger RoutedEvent="Ellipse.MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation
+                                                Storyboard.TargetName="MiniElli"
+                                                Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+                                                To="#BBFFF7"
+                                                Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="Ellipse.MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation
+                                                Storyboard.TargetName="MiniElli"
+                                                Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+                                                To="#2FFF9E"
+                                                Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Ellipse.Triggers>
+                        </Ellipse>
+                    </Grid>
+                </Button>
+                <Button
+                    Width="32"
+                    Height="32"
+                    Background="Transparent"
+                    BorderBrush="Transparent"
+                    Click="Button_Click_2"
+                    Style="{StaticResource CloseAndMinimizeStyle}"
+                    ToolTip="普通">
+                    <Grid>
+                        <Ellipse
+                            x:Name="MiniEll"
+                            Width="25"
+                            Height="25"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Fill="#FFFD55">
+                            <Ellipse.Triggers>
+                                <EventTrigger RoutedEvent="Ellipse.MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation
+                                                Storyboard.TargetName="MiniEll"
+                                                Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+                                                To="#FFFBB7"
+                                                Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="Ellipse.MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation
+                                                Storyboard.TargetName="MiniEll"
+                                                Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+                                                To="#FFFD55"
+                                                Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Ellipse.Triggers>
+                        </Ellipse>
+                    </Grid>
+                </Button>
+                <Button
+                    Width="32"
+                    Margin="0,0,0,0"
+                    Background="Transparent"
+                    BorderBrush="Transparent"
+                    Click="Button_Click_1"
+                    Style="{StaticResource CloseAndMinimizeStyle}"
+                    ToolTip="关闭">
+                    <Grid>
+                        <Ellipse
+                            x:Name="CloseElli"
+                            Width="25"
+                            Height="25"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Fill="Red">
+                            <Ellipse.Triggers>
+                                <EventTrigger RoutedEvent="Ellipse.MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation
+                                                Storyboard.TargetName="CloseElli"
+                                                Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+                                                To="#FF8587"
+                                                Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="Ellipse.MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation
+                                                Storyboard.TargetName="CloseElli"
+                                                Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+                                                To="Red"
+                                                Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Ellipse.Triggers>
+                        </Ellipse>
+                    </Grid>
+                </Button>
+                <Ellipse Width="45" Fill="Transparent" />
+            </StackPanel>
+
+            <TextBlock
+                x:Name="TimeText"
+                Margin="30,0,0,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontSize="20"
+                Style="{StaticResource TextBlockHoverStyle}"
+                Text="00:00:00" />
+
+            <TextBlock
+                x:Name="TitleText"
+                Grid.Column="1"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontSize="25"
+                FontWeight="Medium"
+                Text="Hello">
+                <TextBlock.Triggers>
+                    <EventTrigger RoutedEvent="TextBlock.MouseEnter">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation
+                                    Storyboard.TargetName="TitleText"
+                                    Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
+                                    To="WhiteSmoke"
+                                    Duration="0:0:0.3" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="TextBlock.MouseLeave">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation
+                                    Storyboard.TargetName="TitleText"
+                                    Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
+                                    To="Black"
+                                    Duration="0:0:0.3" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+
+                </TextBlock.Triggers>
+            </TextBlock>
+            <Border
+                Grid.Row="1"
+                Margin="25,0,1,1"
+                Background="#60a9ff"
+                CornerRadius="30,10,10,30">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="50" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Margin="0,10,5,5"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        FontSize="20"
+                        FontWeight="ExtraLight"
+                        Style="{StaticResource TextBlockHoverStyle}"
+                        Text="添加新内容" />
+                    <Button
+                        x:Name="AddContent"
+                        Grid.Column="1"
+                        Width="35"
+                        Height="35"
+                        Margin="0,5,15,0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        BorderBrush="Transparent"
+                        Click="AddContent_Click"
+                        Style="{StaticResource CloseAndMinimizeStyle}">
+                        <Border
+                            x:Name="AddNewBorder"
+                            Width="30"
+                            Height="30"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Background="#608dff"
+                            CornerRadius="20">
+                            <Border.Triggers>
+                                <EventTrigger RoutedEvent="Border.MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation
+                                                Storyboard.TargetName="AddNewBorder"
+                                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                To="#7baeff"
+                                                Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="Border.MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation
+                                                Storyboard.TargetName="AddNewBorder"
+                                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                To="#608dff"
+                                                Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Border.Triggers>
+
+                            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock
+                                    Margin="0,0,0,2"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="30"
+                                    FontWeight="Light"
+                                    Text="+" />
+                            </Grid>
+                        </Border>
+                    </Button>
+                    <Border
+                        x:Name="MachineBorder"
+                        Grid.Row="1"
+                        Grid.RowSpan="2"
+                        Grid.ColumnSpan="2"
+                        Margin="20,0,0,0"
+                        Background="Transparent"
+                        BorderBrush="#ef88be"
+                        BorderThickness="1"
+                        CornerRadius="30,10,10,30">
+                        <ScrollViewer Margin="0" VerticalScrollBarVisibility="Auto">
+                            <ScrollViewer.Resources>
+                                <Style TargetType="ScrollBar">
+                                    <Setter Property="Width" Value="20" />
+                                    <Setter Property="Foreground" Value="Red" />
+                                    <!--  设置滚动条的宽度  -->
+                                </Style>
+                            </ScrollViewer.Resources>
+                            <StackPanel
+                                x:Name="models"
+                                Margin="10,5,0,0"
+                                Background="Transparent"
+                                Orientation="Vertical">
+                                <!--<Ellipse Height="5" Fill="Transparent" />-->
+                                <local:ModelItem
+                                    FileName="Hello"
+                                    MouseDown="ModelItem_MouseDown"
+                                    MouseUp="ModelItem_MouseUp" />
+                                <local:ModelItem FileName="Hello" MouseDown="ModelItem_MouseDown" />
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <Border.Triggers>
+                            <EventTrigger RoutedEvent="Border.MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation
+                                            Storyboard.TargetName="MachineBorder"
+                                            Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                            To="WhiteSmoke"
+                                            Duration="00:00:0.3" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="Border.MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation
+                                            Storyboard.TargetName="MachineBorder"
+                                            Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                            To="#ef88be"
+                                            Duration="00:00:0.3" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                        </Border.Triggers>
+
+                    </Border>
+                </Grid>
+            </Border>
+            <Border
+                x:Name="InfoBorder"
+                Grid.Row="1"
+                Grid.Column="1"
+                Grid.ColumnSpan="2"
+                Margin="0,0,25,1"
+                Background="#60a9ff"
+                BorderBrush="Transparent"
+                BorderThickness="1"
+                CornerRadius="10 30 30 10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="190" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="8*" />
+                        <RowDefinition Height="3*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Margin="10,10,5,2" Orientation="Vertical">
+                        <Grid Margin="2,5,0,-1" VerticalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="AUTO" />
+                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                VerticalAlignment="Bottom"
+                                FontSize="30"
+                                FontWeight="Light"
+                                Style="{StaticResource TextBlockHoverStyle}"
+                                Text="状态集:" />
+                            <ScrollViewer
+                                HorizontalAlignment="Right"
+                                HorizontalScrollBarVisibility="Auto"
+                                VerticalScrollBarVisibility="Disabled" Grid.Column="2">
+                                <TextBlock
+                                    x:Name="StateSet"
+                                    HorizontalAlignment="Right"
+                                    FontSize="30"
+                                    FontWeight="Light"
+                                    Style="{StaticResource TextBlockHoverStyle}"
+                                    Text="" />
+                            </ScrollViewer>
+                        </Grid>
+                        <Ellipse Height="20" Fill="Transparent" />
+                        <Grid VerticalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="AUTO" />
+                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                FontSize="30"
+                                FontWeight="Light"
+                                Style="{StaticResource TextBlockHoverStyle}"
+                                Text="字符集:" />
+                            <TextBlock
+                                x:Name="Symbols"
+                                Grid.Column="2"
+                                HorizontalAlignment="Right"
+                                FontSize="30"
+                                FontWeight="Light"
+                                Style="{StaticResource TextBlockHoverStyle}"
+                                Text="" />
+                        </Grid>
+                        <Ellipse Height="20" Fill="Transparent" />
+                        <Grid VerticalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="AUTO" />
+                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                FontSize="30"
+                                FontWeight="Light"
+                                Style="{StaticResource TextBlockHoverStyle}"
+                                Text="开始状态:" />
+                            <TextBlock
+                                x:Name="InitialState"
+                                Grid.Column="2"
+                                HorizontalAlignment="Right"
+                                FontSize="30"
+                                FontWeight="Light"
+                                Style="{StaticResource TextBlockHoverStyle}"
+                                Text="q0" />
+                        </Grid>
+                        <Ellipse Height="20" Fill="Transparent" />
+                        <Grid VerticalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="AUTO" />
+                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                FontSize="30"
+                                FontWeight="Light"
+                                Style="{StaticResource TextBlockHoverStyle}"
+                                Text="终止状态:" />
+                            <TextBlock
+                                x:Name="terminalState"
+                                Grid.Column="2"
+                                HorizontalAlignment="Right"
+                                FontSize="30"
+                                FontWeight="Light"
+                                Style="{StaticResource TextBlockHoverStyle}"
+                                Text="qf" />
+                        </Grid>
+                        <Ellipse Height="20" Fill="Transparent" />
+                        <Grid VerticalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="AUTO" />
+                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                FontSize="30"
+                                FontWeight="Light"
+                                Style="{StaticResource TextBlockHoverStyle}"
+                                Text="空白符:" />
+                            <TextBlock
+                                x:Name="blankSymbol"
+                                Grid.Column="2"
+                                HorizontalAlignment="Right"
+                                FontSize="30"
+                                FontWeight="Light"
+                                Style="{StaticResource TextBlockHoverStyle}"
+                                Text="B" />
+                        </Grid>
+                        <Ellipse Height="20" Fill="Transparent" />
+                        <StackPanel x:Name="InputStackPanel" Orientation="Horizontal">
+                            <TextBlock
+                                x:Name="InputLabel"
+                                FontSize="30"
+                                FontWeight="Light"
+                                Style="{StaticResource TextBlockHoverStyle}"
+                                Text="输入字符： " />
+                            <TextBox
+                                x:Name="InputTape"
+                                Width="{Binding ElementName=InputStackPanel, Path=ActualWidth, Converter={StaticResource TextBoxWidthConverter}, ConverterParameter=158}"
+                                Height="AUTO"
+                                MinWidth="250"
+                                Background="Transparent"
+                                BorderBrush="#EF88BE"
+                                FontSize="30"
+                                FontWeight="Light" />
+                        </StackPanel>
+                        <Ellipse Height="20" Fill="Transparent" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button
+                                x:Name="StartExecute"
+                                Width="150"
+                                Height="50"
+                                BorderBrush="Transparent"
+                                Click="StartExecute_Click"
+                                Style="{StaticResource CloseAndMinimizeStyle}">
+                                <Border
+                                    x:Name="executeBorder"
+                                    Width="140"
+                                    Height="45"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Background="#608dff"
+                                    CornerRadius="20">
+                                    <Border.Triggers>
+                                        <EventTrigger RoutedEvent="Border.MouseEnter">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <ColorAnimation
+                                                        Storyboard.TargetName="executeBorder"
+                                                        Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                        To="#7baeff"
+                                                        Duration="0:0:0.2" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                        <EventTrigger RoutedEvent="Border.MouseLeave">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <ColorAnimation
+                                                        Storyboard.TargetName="executeBorder"
+                                                        Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                        To="#608dff"
+                                                        Duration="0:0:0.2" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </Border.Triggers>
+                                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <TextBlock
+                                            FontSize="25"
+                                            FontWeight="Light"
+                                            Text="开始执行" />
+                                    </Grid>
+                                </Border>
+                            </Button>
+
+                            <Button
+                                x:Name="ReadTape"
+                                Width="150"
+                                Height="50"
+                                BorderBrush="Transparent"
+                                Click="ReadTape_Click"
+                                Style="{StaticResource CloseAndMinimizeStyle}">
+                                <Border
+                                    x:Name="executeBorder1"
+                                    Width="140"
+                                    Height="45"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Background="#608dff"
+                                    CornerRadius="20">
+                                    <Border.Triggers>
+                                        <EventTrigger RoutedEvent="Border.MouseEnter">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <ColorAnimation
+                                                        Storyboard.TargetName="executeBorder1"
+                                                        Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                        To="#7baeff"
+                                                        Duration="0:0:0.2" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                        <EventTrigger RoutedEvent="Border.MouseLeave">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <ColorAnimation
+                                                        Storyboard.TargetName="executeBorder1"
+                                                        Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                        To="#608dff"
+                                                        Duration="0:0:0.2" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </Border.Triggers>
+                                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <TextBlock
+                                            FontSize="25"
+                                            FontWeight="Light"
+                                            Text="读取字符" />
+                                    </Grid>
+                                </Border>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                    <Border
+                        x:Name="TapeBorder"
+                        Grid.Row="1"
+                        Grid.ColumnSpan="2"
+                        Margin="0,0,0,0"
+                        BorderBrush="#608dff"
+                        BorderThickness="1"
+                        CornerRadius="10 10 30 10">
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                            <StackPanel
+                                x:Name="TapePanel"
+                                Margin="0,30,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Orientation="Horizontal">
+                                <local:TapeChar
+                                    CharName="B"
+                                    IsActive="True"
+                                    StateName="q0" />
+                                <local:TapeChar CharName="B" />
+                                <local:TapeChar CharName="B" />
+                                <local:TapeChar CharName="B" />
+                                <local:TapeChar CharName="B" />
+                            </StackPanel>
+                        </ScrollViewer>
+                        <Border.Triggers>
+                            <EventTrigger RoutedEvent="Border.MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation
+                                            Storyboard.TargetName="TapeBorder"
+                                            Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                            To="WhiteSmoke"
+                                            Duration="00:00:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="Border.MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation
+                                            Storyboard.TargetName="TapeBorder"
+                                            Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                            To="#608dff"
+                                            Duration="00:00:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+                    </Border>
+                    <Border
+                        x:Name="deltaBorder"
+                        Grid.RowSpan="1"
+                        Grid.Column="1"
+                        Margin="1,20,0,0"
+                        Background="Transparent"
+                        BorderBrush="#608dff"
+                        BorderThickness="2"
+                        CornerRadius="10 6 6 10">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontSize="18"
+                                Text="状态转移函数" />
+                            <ListView
+                                x:Name="DeltaList"
+                                Grid.Row="1"
+                                Padding="7"
+                                Background="Transparent"
+                                BorderBrush="Transparent"
+                                FontSize="17"
+                                SelectionChanged="DeltaList_SelectionChanged"
+                                SelectionMode="Single">
+                                <ListViewItem Content="δ(q0,1)=(q1,1,R)" />
+                                <ListView.Triggers>
+                                    <EventTrigger RoutedEvent="ListView.SelectionChanged">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimation
+                                                    Storyboard.TargetName="DeltaFunctionExprText"
+                                                    Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
+                                                    From="#7BEB00"
+                                                    To="Black"
+                                                    Duration="00:00:0.9" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </ListView.Triggers>
+                            </ListView>
+                        </Grid>
+
+                        <Border.Triggers>
+                            <EventTrigger RoutedEvent="Border.MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation
+                                            Storyboard.TargetName="deltaBorder"
+                                            Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                            To="WhiteSmoke"
+                                            Duration="00:00:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="Border.MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation
+                                            Storyboard.TargetName="deltaBorder"
+                                            Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                            To="#608dff"
+                                            Duration="00:00:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+
+                    </Border>
+                </Grid>
+
+                <Border.Triggers>
+                    <EventTrigger RoutedEvent="Border.MouseEnter">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation
+                                    Storyboard.TargetName="InfoBorder"
+                                    Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                    To="WhiteSmoke"
+                                    Duration="00:00:0.2" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+
+                    <EventTrigger RoutedEvent="Border.MouseLeave">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation
+                                    Storyboard.TargetName="InfoBorder"
+                                    Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                    To="Transparent"
+                                    Duration="00:00:0.2" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Border.Triggers>
+
+            </Border>
+
+            <Border
+                x:Name="ToolBarBorder"
+                Grid.Row="2"
+                Grid.ColumnSpan="3"
+                Margin="25,0,25,0"
+                Background="#8f60a9ff"
+                CornerRadius="30 30 5 5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="156" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        x:Name="DeltaFunctionExprText"
+                        Margin="20,0,0,0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontSize="20"
+                        Style="{StaticResource TextBlockHoverStyle}"
+                        Text="δ(q0,1)=(q1,1,R)" />
+                    <TextBlock
+                        x:Name="CopyRight"
+                        Grid.Column="1"
+                        Margin="0,0,20,0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="Comic Sans MS"
+                        FontSize="18"
+                        Text="©2023 M1NG">
+                        <TextBlock.Triggers>
+                            <EventTrigger RoutedEvent="TextBlock.MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation
+                                            Storyboard.TargetName="CopyRight"
+                                            Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
+                                            To="WhiteSmoke"
+                                            Duration="0:0:0.3" />
+                                        <DoubleAnimation
+                                            Storyboard.TargetProperty="(TextBlock.FontSize)"
+                                            To="12"
+                                            Duration="0:0:0.1" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="TextBlock.MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation
+                                            Storyboard.TargetName="CopyRight"
+                                            Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
+                                            To="Black"
+                                            Duration="0:0:0.3" />
+                                        <DoubleAnimation
+                                            Storyboard.TargetProperty="(TextBlock.FontSize)"
+                                            To="18"
+                                            Duration="0:0:0.1" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                        </TextBlock.Triggers>
+                    </TextBlock>
+                </Grid>
+
+                <Border.Triggers>
+                    <EventTrigger RoutedEvent="Border.MouseEnter">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation
+                                    Storyboard.TargetName="ToolBarBorder"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    To="#75FA8D"
+                                    Duration="00:00:0.5" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+
+                    <EventTrigger RoutedEvent="Border.MouseLeave">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation
+                                    Storyboard.TargetName="ToolBarBorder"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    To="#8f60a9ff"
+                                    Duration="00:00:0.5" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Border.Triggers>
+
+            </Border>
+        </Grid>
+    </Border>
+</Window>
