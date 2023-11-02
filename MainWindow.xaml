@@ -81,7 +81,7 @@
         MouseDown="Border_MouseDown">
         <Border.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="#dfef88be" Offset="0.0"/>
+                <GradientStop Color="#ef88be" Offset="0.0"/>
                 <GradientStop Color="#732BF5" Offset="0.6"/>
                 <GradientStop Color="#3580BB" Offset="0.9"/>
             </LinearGradientBrush>
