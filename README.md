@@ -7,4 +7,5 @@ Edit and save a txt file, adding necessary elements for creating a turing machin
 
 
 Then copy the file to the directory of the app or select it **inside the app**.
-![屏幕截图 2023-10-31 221100](https://github.com/a-M1NG/WPFUniversalTuringMachine/assets/119879500/b835f917-9578-40d9-a5e4-13e14a12efe4)
+![image](https://github.com/a-M1NG/WPFUniversalTuringMachine/assets/119879500/ff788e9e-7a64-4010-a317-8eb4872fad40)
+
